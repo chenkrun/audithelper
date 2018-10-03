@@ -1,0 +1,12 @@
+# Monetary funds
+MF:
+  titile:
+    font_name: Times New Roman
+    font_size: 10
+    alignment: left
+  content:
+    font_name: Times New Roman
+    font_size: 10
+    alignment: right
+  row: 4
+  column: 2
