@@ -4,6 +4,9 @@
 import yaml
 import xlrd
 from docx import Document
+from docx.shared import Pt
+from docx.enum.text import WD_ALIGN_PARAGRAPH
+from docx.oxml.ns import qn
 from collections import OrderedDict
 
 YAML_CONFIG_PATH = u"配置.yaml"
@@ -59,17 +62,29 @@ class WordTable(object):
     def __init__(self, word_path):
         self.path = word_path
         self.document = Document()
+        # 修改word正文字体
+        self.document.styles["Normal"].font.name = u"宋体"
+        self.document.styles['Normal']._element.rPr.rFonts.set(qn('w:eastAsia'), u'宋体')
 
     def create_tables(self, execel_data, config_data):
         for key, value in execel_data.items():
             table_config = config_data.get(key)
             table_row = table_config.get("row")
             table_column = table_config.get("column")
-            table = self.document.add_table(rows=table_row,cols=table_column)
+            table = self.document.add_table(rows=table_row, cols=table_column, style="Table Grid")
             for sub_key, sub_value in value.items():
                 print sub_key, sub_value
                 x_y = sub_key.split(DELIMITER)
-                table.cell(int(x_y[0]),int(x_y[1])).text = sub_value
+                coordinate_x = int(x_y[0])
+                coordinate_y = int(x_y[1])
+                paragraph = table.cell(coordinate_x, coordinate_y).add_paragraph()
+                paragraph.paragraph_format.line_spacing = Pt(25)
+                if coordinate_y == 0:
+                    paragraph.alignment = WD_ALIGN_PARAGRAPH.LEFT
+                else:
+                    paragraph.alignment = WD_ALIGN_PARAGRAPH.RIGHT
+                run = paragraph.add_run(sub_value)
+                run.font.size = Pt(table_config.get("content").get("font_size"))
 
     def save(self):
         self.document.save(self.path)

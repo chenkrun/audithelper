@@ -2,11 +2,11 @@
 MF:
   titile:
     font_name: Times New Roman
-    font_size: 10
+    font_size: 10.5
     alignment: left
   content:
     font_name: Times New Roman
-    font_size: 10
+    font_size: 10.5
     alignment: right
   row: 4
   column: 2
