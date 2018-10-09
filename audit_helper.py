@@ -10,7 +10,7 @@ from docx.oxml.ns import qn
 from collections import OrderedDict
 
 YAML_CONFIG_PATH = u"配置.yaml"
-EXCEL_PATH = u"表格.xlsx" #
+EXCEL_PATH = u"表格.xlsx"
 WORD_PATH = u"文档.docx"
 DELIMITER = "-"
 
@@ -62,7 +62,7 @@ class WordTable(object):
     def __init__(self, word_path):
         self.path = word_path
         self.document = Document()
-        # 修改word正文字体
+        # 修改word正文字体。
         self.document.styles["Normal"].font.name = u"宋体"
         self.document.styles['Normal']._element.rPr.rFonts.set(qn('w:eastAsia'), u'宋体')
 
@@ -77,13 +77,15 @@ class WordTable(object):
                 x_y = sub_key.split(DELIMITER)
                 coordinate_x = int(x_y[0])
                 coordinate_y = int(x_y[1])
-                paragraph = table.cell(coordinate_x, coordinate_y).add_paragraph()
-                paragraph.paragraph_format.line_spacing = Pt(25)
+                # add_paragraph函数会另起一个段落，因此会出现一个换行符。
+                cell = table.cell(coordinate_x, coordinate_y)
+                cell.text = sub_value
+                paragraph = cell.paragraphs[0]
                 if coordinate_y == 0:
                     paragraph.alignment = WD_ALIGN_PARAGRAPH.LEFT
                 else:
                     paragraph.alignment = WD_ALIGN_PARAGRAPH.RIGHT
-                run = paragraph.add_run(sub_value)
+                run = paragraph.runs[0]
                 run.font.size = Pt(table_config.get("content").get("font_size"))
 
     def save(self):
